@@ -12,9 +12,15 @@ module.exports = fp(async (fastify, options) => {
       dbTableNamePrefix: 't_signature_',
       getAdminAuthenticate: () => {
         if (!fastify.account) {
-          throw new Error('fastify-account plugin must be registered before fastify-trtc-conference,or set options.getUserAuthenticate');
+          throw new Error('fastify-account plugin must be registered before fastify-trtc-conference,or set options.getAdminAuthenticate');
         }
         return fastify.account.authenticate.admin;
+      },
+      getUserAuthenticate: () => {
+        if (!fastify.account) {
+          throw new Error('fastify-account plugin must be registered before fastify-trtc-conference,or set options.getUserAuthenticate');
+        }
+        return fastify.account.authenticate.user;
       },
       getUserInfo: request => {
         return request.userInfo;
@@ -33,6 +39,7 @@ module.exports = fp(async (fastify, options) => {
     name: options.name,
     options,
     modules: [
+      ['controllers', path.resolve(__dirname, './libs/controllers')],
       [
         'models',
         await fastify.sequelize.addModels(path.resolve(__dirname, './libs/models'), {
