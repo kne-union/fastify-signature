@@ -36,7 +36,8 @@ module.exports = fp(async (fastify, options) => {
       [
         'models',
         await fastify.sequelize.addModels(path.resolve(__dirname, './libs/models'), {
-          prefix: options.dbTableNamePrefix
+          prefix: options.dbTableNamePrefix,
+          getUserModel: options.getUserModel
         })
       ],
       ['services', path.resolve(__dirname, './libs/services')]
