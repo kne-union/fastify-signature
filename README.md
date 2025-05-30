@@ -259,14 +259,14 @@ console.log(result);
 }
 ```
 
-## 签名生成说明
+### 签名生成说明
 
 1. 签名使用 HMAC-SHA256 算法
 2. 签名字符串格式：`${appId}|${timestamp}|${expire}`
 3. 使用 secretKey 作为密钥进行签名
 4. 签名结果使用 hex 编码
 
-## 错误处理
+### 错误处理
 
 所有接口在发生错误时会返回以下格式：
 
@@ -282,7 +282,7 @@ console.log(result);
 - Signature expired: 签名已过期
 - Invalid signature: 签名验证失败
 
-## 注意事项
+### 注意事项
 
 1. 所有需要管理员认证的接口必须在请求头中包含有效的认证信息
 2. 时间戳和过期时间使用 Unix 时间戳（秒）
