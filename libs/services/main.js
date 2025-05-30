@@ -1,9 +1,10 @@
 const fp = require('fastify-plugin');
+const crypto = require('crypto');
 
 module.exports = fp(async (fastify, options) => {
-  const { models, services } = [options.name];
+  const { models, services } = fastify[options.name];
 
-  const add = async (authenticatePayload, { description }) => {
+  const create = async (authenticatePayload, { description }) => {
     const { id: userId } = authenticatePayload;
     const secretKey = crypto.randomBytes(options.secretLength).toString('hex');
     const newSecret = await models.secret.create({ secretKey, description, userId });
@@ -59,7 +60,7 @@ module.exports = fp(async (fastify, options) => {
         return {
           id: item.id,
           appId: item.id,
-          secretKey: item.secretKey.substring(0, 3) + '*'.repeat(item.secretKey.length - 6) + item.secretKey.substring(item.secretKey.length - 3),
+          secretKey: item.secretKey.substring(0, 3) + '*'.repeat(8) + item.secretKey.substring(item.secretKey.length - 3),
           description: item.description,
           lastVisitedAt: item.lastVisitedAt,
           status: item.status,
@@ -96,7 +97,7 @@ module.exports = fp(async (fastify, options) => {
   };
 
   Object.assign(fastify[options.name].services, {
-    add,
+    create,
     verify,
     list,
     remove,

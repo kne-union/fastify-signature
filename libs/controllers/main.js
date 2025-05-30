@@ -3,23 +3,27 @@ const fp = require('fastify-plugin');
 module.exports = fp(async (fastify, options) => {
   const { services } = fastify[options.name];
   const adminAuth = options.getAdminAuthenticate();
+  const userAuth = options.getUserAuthenticate();
   fastify.get(
     `${options.prefix}/list`,
     {
-      onRequest: [adminAuth],
+      onRequest: [userAuth, adminAuth],
       schema: {
         description: '获取密钥列表',
         summary: '获取密钥列表',
         query: {
-          currentPage: {
-            type: 'number',
-            description: '页码',
-            default: 1
-          },
-          perPage: {
-            type: 'number',
-            description: '每页数量',
-            default: 20
+          type: 'object',
+          properties: {
+            currentPage: {
+              type: 'number',
+              description: '页码',
+              default: 1
+            },
+            perPage: {
+              type: 'number',
+              description: '每页数量',
+              default: 20
+            }
           }
         }
       }
@@ -32,7 +36,7 @@ module.exports = fp(async (fastify, options) => {
   fastify.post(
     `${options.prefix}/create`,
     {
-      onRequest: [adminAuth],
+      onRequest: [userAuth, adminAuth],
       schema: {
         description: '创建密钥',
         summary: '创建密钥',
@@ -55,7 +59,7 @@ module.exports = fp(async (fastify, options) => {
   fastify.post(
     `${options.prefix}/remove`,
     {
-      onRequest: [adminAuth],
+      onRequest: [userAuth, adminAuth],
       schema: {
         description: '删除密钥',
         summary: '删除密钥',
@@ -79,7 +83,7 @@ module.exports = fp(async (fastify, options) => {
   fastify.post(
     `${options.prefix}/update`,
     {
-      onRequest: [adminAuth],
+      onRequest: [userAuth, adminAuth],
       schema: {
         description: '更新密钥',
         summary: '更新密钥',
