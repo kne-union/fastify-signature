@@ -1,5 +1,6 @@
 const fp = require('fastify-plugin');
 const path = require('node:path');
+const { Unauthorized } = require('http-error');
 
 module.exports = fp(async (fastify, options) => {
   options = Object.assign(
@@ -47,7 +48,24 @@ module.exports = fp(async (fastify, options) => {
           getUserModel: options.getUserModel
         })
       ],
-      ['services', path.resolve(__dirname, './libs/services')]
+      ['services', path.resolve(__dirname, './libs/services')],
+      [
+        'authenticate',
+        {
+          openApi: async request => {
+            const { appId, timestamp, expire, signature } = request.headers;
+            const { result, message } = await fastify[options.name].services.verify({
+              appId,
+              timestamp,
+              expire,
+              signature
+            });
+            if (result !== true) {
+              throw new Unauthorized(message);
+            }
+          }
+        }
+      ]
     ]
   });
 });

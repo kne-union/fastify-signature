@@ -67,7 +67,7 @@ module.exports = fp(async (fastify, options) => {
           type: 'object',
           properties: {
             appId: {
-              type: 'number',
+              type: 'string',
               description: '密钥ID'
             }
           }
@@ -91,7 +91,7 @@ module.exports = fp(async (fastify, options) => {
           type: 'object',
           properties: {
             appId: {
-              type: 'number',
+              type: 'string',
               description: '密钥ID'
             },
             status: {
@@ -122,7 +122,7 @@ module.exports = fp(async (fastify, options) => {
           type: 'object',
           properties: {
             appId: {
-              type: 'number',
+              type: 'string',
               description: '密钥ID'
             },
             timestamp: {
