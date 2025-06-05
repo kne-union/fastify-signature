@@ -42,7 +42,8 @@ module.exports = fp(async (fastify, options) => {
 
     return {
       result: true,
-      message: 'signature valid'
+      message: 'signature valid',
+      userId: secret.userId
     };
   };
 
