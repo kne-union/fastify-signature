@@ -31,6 +31,10 @@ module.exports = fp(async (fastify, options) => {
           throw new Error('fastify-account plugin must be registered before fastify-trtc-conference,or set options.getUserModel');
         }
         return fastify.account.models.user;
+      },
+      getOpenApiParams: request => {
+        const { appid: appId, timestamp, expire, signature } = request.headers;
+        return { appId, timestamp, expire, signature };
       }
     },
     options
@@ -53,13 +57,7 @@ module.exports = fp(async (fastify, options) => {
         'authenticate',
         {
           openApi: async request => {
-            const { appId, timestamp, expire, signature } = request.headers;
-            const { result, message, userId } = await fastify[options.name].services.verify({
-              appId,
-              timestamp,
-              expire,
-              signature
-            });
+            const { result, message, userId } = await fastify[options.name].services.verify(options.getOpenApiParams(request));
             if (result !== true) {
               throw new Unauthorized(message);
             }
