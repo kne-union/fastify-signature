@@ -54,7 +54,7 @@ module.exports = fp(async (fastify, options) => {
         {
           openApi: async request => {
             const { appId, timestamp, expire, signature } = request.headers;
-            const { result, message } = await fastify[options.name].services.verify({
+            const { result, message, userId } = await fastify[options.name].services.verify({
               appId,
               timestamp,
               expire,
@@ -63,6 +63,7 @@ module.exports = fp(async (fastify, options) => {
             if (result !== true) {
               throw new Unauthorized(message);
             }
+            request.openApiPayload = await options.getUserModel().findByPk(userId);
           }
         }
       ]
