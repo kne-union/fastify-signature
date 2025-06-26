@@ -33,8 +33,8 @@ module.exports = fp(async (fastify, options) => {
         return fastify.account.models.user;
       },
       getOpenApiParams: request => {
-        const { appid: appId, timestamp, expire, signature } = request.headers;
-        return { appId, timestamp, expire, signature };
+        const { ['x-openapi-appid']: appId, ['x-openapi-timestamp']: timestamp, ['x-openapi-expire']: expire, ['x-openapi-signature']: signature } = request.headers;
+        return Object.assign({}, { appId, timestamp, expire, signature }, request.body);
       }
     },
     options

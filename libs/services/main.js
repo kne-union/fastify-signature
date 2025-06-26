@@ -4,10 +4,10 @@ const crypto = require('crypto');
 module.exports = fp(async (fastify, options) => {
   const { models, services } = fastify[options.name];
 
-  const create = async (authenticatePayload, { description }) => {
+  const create = async (authenticatePayload, { description, userId: targetUserId }) => {
     const { id: userId } = authenticatePayload;
     const secretKey = crypto.randomBytes(options.secretLength).toString('hex');
-    const newSecret = await models.secret.create({ secretKey, description, userId });
+    const newSecret = await models.secret.create({ secretKey, description, userId: targetUserId || userId });
     return { appId: newSecret.id, secretKey: newSecret.secretKey };
   };
 
@@ -34,7 +34,7 @@ module.exports = fp(async (fastify, options) => {
     if (expectedSignature !== signature) {
       return {
         result: false,
-        message: 'Invalid signature'
+        message: `Invalid signature [${appId},${signature},${timestamp},${expire}]`
       };
     }
 
