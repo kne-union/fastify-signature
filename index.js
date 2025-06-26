@@ -34,7 +34,7 @@ module.exports = fp(async (fastify, options) => {
       },
       getOpenApiParams: request => {
         const { ['x-openapi-appid']: appId, ['x-openapi-timestamp']: timestamp, ['x-openapi-expire']: expire, ['x-openapi-signature']: signature } = request.headers;
-        return Object.assign({}, { appId, timestamp, expire, signature }, request.body);
+        return Object.assign({}, { appId, timestamp, expire, signature }, request.body?.openApiParams);
       }
     },
     options

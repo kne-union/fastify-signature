@@ -1,6 +1,6 @@
 {
   "name": "@kne/fastify-signature",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "用于实现一个签名和验证算法",
   "main": "index.js",
   "scripts": {
