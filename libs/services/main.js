@@ -50,9 +50,8 @@ module.exports = fp(async (fastify, options) => {
   const list = async (authenticatePayload, { perPage, currentPage }) => {
     const { id: userId } = authenticatePayload;
     const { count, rows } = await models.secret.findAndCountAll({
-      where: {
-        userId
-      },
+      include: options.getUserModel(),
+      where: {},
       limit: perPage,
       offset: (currentPage - 1) * perPage
     });
@@ -62,6 +61,7 @@ module.exports = fp(async (fastify, options) => {
           id: item.id,
           appId: item.id,
           secretKey: item.secretKey.substring(0, 3) + '*'.repeat(8) + item.secretKey.substring(item.secretKey.length - 3),
+          user: item.user,
           description: item.description,
           lastVisitedAt: item.lastVisitedAt,
           status: item.status,
