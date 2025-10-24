@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+const crypto = require('node:crypto');
 
 function generateSignature(appId, appSecret, expireInSeconds) {
   const timestamp = Math.floor(Date.now() / 1000); // 当前时间戳（秒）
