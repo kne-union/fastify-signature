@@ -23,6 +23,15 @@ module.exports = fp(async (fastify, options) => {
               type: 'number',
               description: '每页数量',
               default: 20
+            },
+            filter: {
+              type: 'object',
+              additionalProperties: true,
+              properties: {
+                keyword: { type: 'string', description: '关键字（AppId/描述/所属用户）' },
+                appId: { type: 'string', description: 'AppId' },
+                status: { description: '状态: 0开启，1禁用' }
+              }
             }
           }
         }
