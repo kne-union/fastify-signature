@@ -24,12 +24,18 @@ const pageResult = (description, item) => ({
 
 const STATUS = '状态：0 开启，1 禁用';
 
+const scopeItem = obj('作用域项', {
+  method: str('HTTP 方法，如 GET/POST'),
+  path: str('路由模板 path，如 /api/v1/open-api/xxx')
+});
+
 const secret = obj('密钥', {
   id: str('密钥 ID（同 appId）'),
   appId: str('AppId，即密钥 ID'),
   secretKey: str('脱敏后的密钥，只保留首尾各 3 位'),
   user: any('所属用户，未关联到用户时为 null'),
   description: str('描述'),
+  scopes: list('允许调用的 Open API；null/空表示不限制', scopeItem),
   lastVisitedAt: any('最后一次验签成功的时间'),
   status: num(STATUS),
   createdAt: any('创建时间'),
