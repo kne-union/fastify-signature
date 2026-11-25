@@ -1,5 +1,6 @@
 const fp = require('fastify-plugin');
 const crypto = require('crypto');
+const { normalizeScopes, isRequestInScope } = require('../scopes');
 
 module.exports = fp(async (fastify, options) => {
   const { models, services } = fastify[options.name];
@@ -15,10 +16,15 @@ module.exports = fp(async (fastify, options) => {
     return String(appId);
   };
 
-  const create = async (authenticatePayload, { description, userId: targetUserId }) => {
+  const create = async (authenticatePayload, { description, userId: targetUserId, scopes }) => {
     const { id: userId } = authenticatePayload;
     const secretKey = crypto.randomBytes(options.secretLength).toString('hex');
-    const newSecret = await models.secret.create({ secretKey, description, userId: targetUserId || userId });
+    const newSecret = await models.secret.create({
+      secretKey,
+      description,
+      userId: targetUserId || userId,
+      scopes: normalizeScopes(scopes)
+    });
     return { appId: String(newSecret.id), secretKey: newSecret.secretKey };
   };
 
@@ -54,7 +60,8 @@ module.exports = fp(async (fastify, options) => {
     return {
       result: true,
       message: 'signature valid',
-      userId: secret.userId
+      userId: secret.userId,
+      scopes: secret.scopes
     };
   };
 
@@ -104,6 +111,7 @@ module.exports = fp(async (fastify, options) => {
           secretKey: item.secretKey.substring(0, 3) + '*'.repeat(8) + item.secretKey.substring(item.secretKey.length - 3),
           user: item.user,
           description: item.description,
+          scopes: item.scopes == null ? null : item.scopes,
           lastVisitedAt: item.lastVisitedAt,
           status: item.status,
           createdAt: item.createdAt,
@@ -123,12 +131,30 @@ module.exports = fp(async (fastify, options) => {
     await secret.destroy();
   };
 
-  const update = async (authenticatePayload, { appId, status, description }) => {
+  const update = async (authenticatePayload, { appId, status, description, scopes }) => {
     const secret = await models.secret.findByPk(resolveAppId(appId));
     if (!secret) {
       throw new Error('Invalid appId');
     }
-    await secret.update({ status, description });
+    const payload = {};
+    if (status !== undefined) {
+      payload.status = status;
+    }
+    if (description !== undefined) {
+      payload.description = description;
+    }
+    if (scopes !== undefined) {
+      payload.scopes = normalizeScopes(scopes);
+    }
+    await secret.update(payload);
+  };
+
+  const assertRequestInScope = (scopes, request) => {
+    if (!isRequestInScope(scopes, request)) {
+      const err = new Error('Signature scope denied');
+      err.code = 'SIGNATURE_SCOPE_DENIED';
+      throw err;
+    }
   };
 
   Object.assign(fastify[options.name].services, {
@@ -136,6 +162,9 @@ module.exports = fp(async (fastify, options) => {
     verify,
     list,
     remove,
-    update
+    update,
+    assertRequestInScope,
+    normalizeScopes,
+    isRequestInScope
   });
 });

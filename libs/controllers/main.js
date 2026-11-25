@@ -55,7 +55,7 @@ module.exports = fp(async (fastify, options) => {
       onRequest: [userAuth, adminAuth],
       schema: {
         tags: [ADMIN_TAG],
-        description: '生成一对 AppId / 密钥，密钥明文只在创建时返回一次',
+        description: '生成一对 AppId / 密钥，密钥明文只在创建时返回一次；scopes 为空或不传表示不限制 Open API',
         summary: '创建密钥',
         body: {
           type: 'object',
@@ -66,6 +66,18 @@ module.exports = fp(async (fastify, options) => {
             },
             userId: {
               description: '密钥所属用户 ID，不传为当前登录用户；验签通过后以该用户身份访问开放接口'
+            },
+            scopes: {
+              type: 'array',
+              nullable: true,
+              description: '允许调用的 Open API 列表；null/空数组表示不限制',
+              items: {
+                type: 'object',
+                properties: {
+                  method: { type: 'string', description: 'HTTP 方法' },
+                  path: { type: 'string', description: '路由模板 path' }
+                }
+              }
             }
           }
         },
@@ -115,7 +127,7 @@ module.exports = fp(async (fastify, options) => {
       onRequest: [userAuth, adminAuth],
       schema: {
         tags: [ADMIN_TAG],
-        description: '修改密钥状态与描述，未传的字段保持原值；AppId 不存在时报错',
+        description: '修改密钥状态、描述与作用域，未传的字段保持原值；scopes 传 null/空数组表示不限制；AppId 不存在时报错',
         summary: '更新密钥',
         body: {
           type: 'object',
@@ -131,6 +143,18 @@ module.exports = fp(async (fastify, options) => {
             description: {
               type: 'string',
               description: '描述'
+            },
+            scopes: {
+              type: 'array',
+              nullable: true,
+              description: '允许调用的 Open API 列表；null/空数组表示不限制',
+              items: {
+                type: 'object',
+                properties: {
+                  method: { type: 'string', description: 'HTTP 方法' },
+                  path: { type: 'string', description: '路由模板 path' }
+                }
+              }
             }
           }
         },

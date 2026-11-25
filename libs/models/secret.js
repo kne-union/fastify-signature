@@ -18,6 +18,11 @@ module.exports = ({ DataTypes, options }) => {
         type: DataTypes.INTEGER,
         defaultValue: 0,
         comment: '状态: 0开启，1禁用'
+      },
+      scopes: {
+        type: DataTypes.JSON,
+        allowNull: true,
+        comment: 'Open API 作用域：[{ method, path }]；null/空数组表示不限制'
       }
     },
     associate: ({ secret }) => {

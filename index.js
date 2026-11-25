@@ -57,9 +57,14 @@ module.exports = fp(async (fastify, options) => {
         'authenticate',
         {
           openApi: async request => {
-            const { result, message, userId } = await fastify[options.name].services.verify(options.getOpenApiParams(request));
+            const { result, message, userId, scopes } = await fastify[options.name].services.verify(options.getOpenApiParams(request));
             if (result !== true) {
               throw new Unauthorized(message);
+            }
+            try {
+              fastify[options.name].services.assertRequestInScope(scopes, request);
+            } catch (e) {
+              throw new Unauthorized(e.message || 'Signature scope denied');
             }
             request.openApiPayload = await options.getUserModel().findByPk(userId);
           }

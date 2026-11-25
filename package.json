@@ -1,12 +1,13 @@
 {
   "name": "@kne/fastify-signature",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "用于实现一个签名和验证算法",
   "main": "index.js",
   "scripts": {
     "init": "husky",
     "dev": "nodemon ./index.js",
     "start": "node ./index.js",
+    "test": "node --test tests/scopes.test.js",
     "build:md": "npx @kne/md-doc",
     "start:md": "npx @kne/md-doc --watch",
     "prettier": "prettier --config .prettierrc --write '{libs/**/*,index}.{js,jsx,ts,tsx,json,css,scss}'",
